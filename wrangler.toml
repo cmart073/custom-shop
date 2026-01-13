@@ -11,13 +11,3 @@ database_id = "fc0cb680-e30c-408b-b60e-f13f42e57010"
 binding = "R2"
 bucket_name = "cmart073-uploads"
 
-[vars]
-FROM_EMAIL = "orders@cmart073.com"
-SHIP_TO_ADDRESS = "CMart073, 123 Golf Lane, Suite 100, Phoenix, AZ 85001"
-SITE_URL = "https://cmart073.com"
-
-# These should be set as secrets via Cloudflare dashboard:
-# SENDGRID_API_KEY
-# ADMIN_EMAIL
-# TURNSTILE_SECRET_KEY
-# TURNSTILE_SITE_KEY (for frontend)
