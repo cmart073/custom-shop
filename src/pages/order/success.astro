@@ -1,0 +1,137 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+// Get ship-to address from environment
+const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lane, Suite 100, Phoenix, AZ 85001';
+---
+
+<Layout title="Order Submitted — CMart073">
+  <section class="section">
+    <div class="container container--narrow text-center">
+      
+      <!-- Success Icon -->
+      <div style="width: 80px; height: 80px; background: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-xl);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      
+      <h1 style="margin-bottom: var(--space-md);">Order Submitted!</h1>
+      <p class="text-muted" style="font-size: 1.125rem; margin-bottom: var(--space-xl);">
+        Thank you for your order. We've sent a confirmation email with all the details.
+      </p>
+      
+      <!-- Order ID -->
+      <div class="card" style="display: inline-block; padding: var(--space-lg) var(--space-2xl); margin-bottom: var(--space-2xl);">
+        <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: var(--space-xs);">Your Order Reference</div>
+        <div id="order-id" style="font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--color-primary); letter-spacing: 2px;">
+          Loading...
+        </div>
+      </div>
+      
+      <!-- Next Steps -->
+      <div class="card text-left" style="margin-bottom: var(--space-2xl);">
+        <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg);">Next Steps</h2>
+        
+        <div style="display: grid; gap: var(--space-lg);">
+          <div style="display: flex; gap: var(--space-md);">
+            <div style="width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">1</div>
+            <div>
+              <strong>Ship Your Clubs</strong>
+              <p class="text-muted" style="margin: var(--space-xs) 0 0;">
+                Package your clubs securely and ship them to:
+              </p>
+              <div style="background: var(--color-bg-alt); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-sm); border-left: 4px solid var(--color-primary);">
+                <strong id="ship-address">{shipToAddress.split(',').join('\n')}</strong>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: var(--space-md);">
+            <div style="width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">2</div>
+            <div>
+              <strong>We'll Confirm Receipt</strong>
+              <p class="text-muted" style="margin: var(--space-xs) 0 0;">
+                Once we receive your clubs, we'll send you an update.
+              </p>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: var(--space-md);">
+            <div style="width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">3</div>
+            <div>
+              <strong>Customization & Return</strong>
+              <p class="text-muted" style="margin: var(--space-xs) 0 0;">
+                Typical turnaround is 2–5 business days after receipt. We'll ship your clubs back with before/after photos.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Price Estimate -->
+      <div class="price-estimate" style="margin-bottom: var(--space-2xl);">
+        <div class="price-estimate__label">Estimated Total</div>
+        <div class="price-estimate__value" id="price-range">—</div>
+        <div class="price-estimate__note">Includes estimated return shipping • Final price may vary</div>
+      </div>
+      
+      <!-- Reminder -->
+      <div class="alert alert--info text-left" style="margin-bottom: var(--space-2xl);">
+        <strong>Reminder:</strong> All services are cosmetic only. We do not modify club performance or specifications.
+      </div>
+      
+      <!-- Actions -->
+      <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap;">
+        <a href="/" class="btn btn--primary">Back to Home</a>
+        <a href="/faq" class="btn btn--secondary">View FAQ</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Get order info from URL
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('id');
+  const minPrice = params.get('min');
+  const maxPrice = params.get('max');
+  
+  if (orderId) {
+    const orderIdEl = document.getElementById('order-id');
+    if (orderIdEl) orderIdEl.textContent = orderId;
+    
+    // Show price from URL params if available
+    if (minPrice && maxPrice) {
+      const priceEl = document.getElementById('price-range');
+      if (priceEl) {
+        priceEl.textContent = `$${Math.floor(parseInt(minPrice) / 100)} – $${Math.floor(parseInt(maxPrice) / 100)}`;
+      }
+    } else {
+      // Fallback: fetch order details
+      fetchOrderDetails(orderId);
+    }
+  }
+  
+  async function fetchOrderDetails(shortId: string) {
+    try {
+      const response = await fetch(`/api/orders/${shortId}`);
+      if (response.ok) {
+        const data = await response.json();
+        const priceEl = document.getElementById('price-range');
+        if (priceEl && data.order?.est_price_min && data.order?.est_price_max) {
+          priceEl.textContent = `$${Math.floor(data.order.est_price_min / 100)} – $${Math.floor(data.order.est_price_max / 100)}`;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch order details:', error);
+    }
+  }
+</script>
+
+<style>
+  #ship-address {
+    white-space: pre-line;
+    font-size: 0.9375rem;
+  }
+</style>
