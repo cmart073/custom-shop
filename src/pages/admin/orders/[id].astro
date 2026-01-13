@@ -67,6 +67,9 @@ const gripSizeLabels: Record<string, string> = {
         <span class={`status-badge status-${order.status}`}>
           {formatStatus(order.status)}
         </span>
+        <span class={`payment-badge ${order.payment_status === 'PAID' ? 'paid' : 'unpaid'}`}>
+          {order.payment_status === 'PAID' ? '✓ Paid' : 'Unpaid'}
+        </span>
       </div>
     </header>
 
@@ -230,13 +233,21 @@ const gripSizeLabels: Record<string, string> = {
             <input type="hidden" name="orderId" value={order.id} />
             
             <div class="form-group">
-              <label for="status">Status</label>
+              <label for="status">Fulfillment Status</label>
               <select id="status" name="status">
                 {ORDER_STATUSES.map((status) => (
                   <option value={status} selected={order.status === status}>
                     {formatStatus(status)}
                   </option>
                 ))}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="paymentStatus">Payment Status</label>
+              <select id="paymentStatus" name="paymentStatus">
+                <option value="UNPAID" selected={order.payment_status !== 'PAID'}>Unpaid</option>
+                <option value="PAID" selected={order.payment_status === 'PAID'}>Paid</option>
               </select>
             </div>
 
@@ -263,12 +274,27 @@ const gripSizeLabels: Record<string, string> = {
               >{order.admin_notes || ''}</textarea>
             </div>
 
+            <div class="form-group notify-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="notifyCustomer" name="notifyCustomer" checked />
+                <span>Notify customer by email</span>
+              </label>
+            </div>
+
             <button type="submit" class="btn btn-primary btn-block" id="save-btn">
               Save Changes
             </button>
 
             <div id="save-status" class="save-status"></div>
           </form>
+
+          <!-- Payment Instructions (shown when ready but unpaid) -->
+          {order.status === 'ready' && order.payment_status !== 'PAID' && (
+            <div class="payment-instructions">
+              <h3>Payment Pending</h3>
+              <p>Payment is currently handled manually. Send Venmo or PayPal details when ready.</p>
+            </div>
+          )}
         </section>
       </aside>
     </div>
@@ -312,6 +338,12 @@ const gripSizeLabels: Record<string, string> = {
     margin: 0.25rem 0 0 0;
     color: var(--text-muted);
     font-size: 0.875rem;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   .order-grid {
@@ -557,9 +589,60 @@ const gripSizeLabels: Record<string, string> = {
   .status-pending { background: #fef3c7; color: #92400e; }
   .status-received { background: #dbeafe; color: #1e40af; }
   .status-in_progress { background: #e0e7ff; color: #3730a3; }
+  .status-ready { background: #fef3c7; color: #92400e; }
   .status-completed { background: #d1fae5; color: #065f46; }
   .status-shipped { background: #f3e8ff; color: #6b21a8; }
   .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+  .payment-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .payment-badge.paid { background: #d1fae5; color: #065f46; }
+  .payment-badge.unpaid { background: #f3f4f6; color: #6b7280; }
+
+  .notify-group {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9375rem;
+  }
+
+  .checkbox-label input {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .payment-instructions {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #fffbeb;
+    border: 1px solid #f59e0b;
+    border-radius: var(--radius-sm);
+  }
+
+  .payment-instructions h3 {
+    font-size: 0.875rem;
+    margin: 0 0 0.5rem 0;
+    color: #92400e;
+  }
+
+  .payment-instructions p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #92400e;
+  }
 </style>
 
 <script>
@@ -578,8 +661,10 @@ const gripSizeLabels: Record<string, string> = {
     const formData = new FormData(form);
     const orderId = formData.get('orderId') as string;
     const status = formData.get('status') as string;
+    const paymentStatus = formData.get('paymentStatus') as string;
     const quotedPriceStr = formData.get('quotedPrice') as string;
     const adminNotes = formData.get('adminNotes') as string;
+    const notifyCustomer = (document.getElementById('notifyCustomer') as HTMLInputElement)?.checked;
 
     // Convert dollars to cents
     const quotedPrice = quotedPriceStr ? Math.round(parseFloat(quotedPriceStr) * 100) : null;
@@ -592,13 +677,15 @@ const gripSizeLabels: Record<string, string> = {
         },
         body: JSON.stringify({
           status,
+          paymentStatus,
           quotedPrice,
           adminNotes: adminNotes || null,
+          notifyCustomer,
         }),
       });
 
       if (response.ok) {
-        saveStatus.textContent = '✓ Changes saved';
+        saveStatus.textContent = notifyCustomer ? '✓ Saved & customer notified' : '✓ Changes saved';
         saveStatus.className = 'save-status success';
         
         // Update status badge on page
@@ -609,15 +696,23 @@ const gripSizeLabels: Record<string, string> = {
             pending: 'Pending',
             received: 'Received',
             in_progress: 'In Progress',
+            ready: 'Ready',
             completed: 'Completed',
             shipped: 'Shipped',
             cancelled: 'Cancelled',
           };
           statusBadge.textContent = statusLabels[status] || status;
         }
+
+        // Update payment badge
+        const paymentBadge = document.querySelector('.payment-badge');
+        if (paymentBadge) {
+          paymentBadge.className = `payment-badge ${paymentStatus === 'PAID' ? 'paid' : 'unpaid'}`;
+          paymentBadge.textContent = paymentStatus === 'PAID' ? '✓ Paid' : 'Unpaid';
+        }
       } else {
         const error = await response.json();
-        saveStatus.textContent = error.message || 'Failed to save';
+        saveStatus.textContent = error.error || 'Failed to save';
         saveStatus.className = 'save-status error';
       }
     } catch (error) {

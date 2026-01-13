@@ -2,10 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 
 // Get ship-to address from environment
-const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lane, Suite 100, Phoenix, AZ 85001';
+const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'Cmart Customization Shop, 123 Golf Lane, Suite 100, Phoenix, AZ 85001';
 ---
 
-<Layout title="Order Submitted — CMart073">
+<Layout title="Order Submitted — Cmart Customization Shop">
   <section class="section">
     <div class="container container--narrow text-center">
       
@@ -16,9 +16,9 @@ const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lan
         </svg>
       </div>
       
-      <h1 style="margin-bottom: var(--space-md);">Order Submitted!</h1>
+      <h1 style="margin-bottom: var(--space-md);">Got it!</h1>
       <p class="text-muted" style="font-size: 1.125rem; margin-bottom: var(--space-xl);">
-        Thank you for your order. We've sent a confirmation email with all the details.
+        Your order's in. I sent you a confirmation email with all the details.
       </p>
       
       <!-- Order ID -->
@@ -31,7 +31,7 @@ const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lan
       
       <!-- Next Steps -->
       <div class="card text-left" style="margin-bottom: var(--space-2xl);">
-        <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg);">Next Steps</h2>
+        <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg);">What's Next</h2>
         
         <div style="display: grid; gap: var(--space-lg);">
           <div style="display: flex; gap: var(--space-md);">
@@ -39,7 +39,7 @@ const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lan
             <div>
               <strong>Ship Your Clubs</strong>
               <p class="text-muted" style="margin: var(--space-xs) 0 0;">
-                Package your clubs securely and ship them to:
+                Box them up and send them here:
               </p>
               <div style="background: var(--color-bg-alt); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-sm); border-left: 4px solid var(--color-primary);">
                 <strong id="ship-address">{shipToAddress.split(',').join('\n')}</strong>
@@ -50,9 +50,9 @@ const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lan
           <div style="display: flex; gap: var(--space-md);">
             <div style="width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">2</div>
             <div>
-              <strong>We'll Confirm Receipt</strong>
+              <strong>I'll Let You Know When They Arrive</strong>
               <p class="text-muted" style="margin: var(--space-xs) 0 0;">
-                Once we receive your clubs, we'll send you an update.
+                You'll get an update once I have them in hand.
               </p>
             </div>
           </div>
@@ -60,9 +60,9 @@ const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lan
           <div style="display: flex; gap: var(--space-md);">
             <div style="width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">3</div>
             <div>
-              <strong>Customization & Return</strong>
+              <strong>Work Gets Done, Clubs Come Back</strong>
               <p class="text-muted" style="margin: var(--space-xs) 0 0;">
-                Typical turnaround is 2–5 business days after receipt. We'll ship your clubs back with before/after photos.
+                Usually 2–5 business days. I'll send before/after photos and payment details when they're ready to ship back.
               </p>
             </div>
           </div>
@@ -73,12 +73,12 @@ const shipToAddress = import.meta.env.SHIP_TO_ADDRESS || 'CMart073, 123 Golf Lan
       <div class="price-estimate" style="margin-bottom: var(--space-2xl);">
         <div class="price-estimate__label">Estimated Total</div>
         <div class="price-estimate__value" id="price-range">—</div>
-        <div class="price-estimate__note">Includes estimated return shipping • Final price may vary</div>
+        <div class="price-estimate__note">Includes estimated return shipping • Final may vary slightly</div>
       </div>
       
       <!-- Reminder -->
       <div class="alert alert--info text-left" style="margin-bottom: var(--space-2xl);">
-        <strong>Reminder:</strong> All services are cosmetic only. We do not modify club performance or specifications.
+        <strong>Just a heads up:</strong> This is cosmetic work only — I don't touch lofts, lies, or weights.
       </div>
       
       <!-- Actions -->

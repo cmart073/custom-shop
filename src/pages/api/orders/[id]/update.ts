@@ -1,11 +1,14 @@
 // POST /api/orders/[id]/update - Update order (admin)
 import type { APIRoute } from 'astro';
+import { sendStatusUpdateEmail, sendPaymentConfirmationEmail } from '../../../../lib/email';
 
-const VALID_STATUSES = ['pending', 'received', 'in_progress', 'completed', 'shipped', 'cancelled'];
+const VALID_STATUSES = ['pending', 'received', 'in_progress', 'ready', 'completed', 'shipped', 'cancelled'];
+const VALID_PAYMENT_STATUSES = ['UNPAID', 'PAID'];
 
 export const POST: APIRoute = async ({ params, request, locals }) => {
   try {
-    const db = locals.runtime.env.DB;
+    const env = locals.runtime.env;
+    const db = env.DB;
     const orderId = params.id;
 
     if (!db) {
@@ -22,8 +25,17 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       });
     }
 
-    // Verify order exists
-    const existingOrder = await db.prepare('SELECT id FROM orders WHERE id = ?').bind(orderId).first();
+    // Get existing order with current values
+    const existingOrder = await db.prepare(
+      'SELECT id, short_id, full_name, email, status, payment_status FROM orders WHERE id = ?'
+    ).bind(orderId).first() as {
+      id: string;
+      short_id: string;
+      full_name: string;
+      email: string;
+      status: string;
+      payment_status: string;
+    } | null;
 
     if (!existingOrder) {
       return new Response(JSON.stringify({ error: 'Order not found' }), {
@@ -34,13 +46,23 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     const input = await request.json() as {
       status?: string;
+      paymentStatus?: string;
       quotedPrice?: number | null;
       adminNotes?: string | null;
+      notifyCustomer?: boolean;
     };
 
     // Validate status
     if (input.status && !VALID_STATUSES.includes(input.status)) {
       return new Response(JSON.stringify({ error: 'Invalid status value' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate payment status
+    if (input.paymentStatus && !VALID_PAYMENT_STATUSES.includes(input.paymentStatus)) {
+      return new Response(JSON.stringify({ error: 'Invalid payment status value' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -53,6 +75,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     if (input.status !== undefined) {
       updates.push('status = ?');
       values.push(input.status);
+    }
+
+    if (input.paymentStatus !== undefined) {
+      updates.push('payment_status = ?');
+      values.push(input.paymentStatus);
     }
 
     if (input.quotedPrice !== undefined) {
@@ -74,6 +101,34 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     values.push(orderId);
     await db.prepare(`UPDATE orders SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+
+    // Send email notifications if checkbox was checked
+    if (input.notifyCustomer && env.RESEND_API_KEY) {
+      const emailData = {
+        shortId: existingOrder.short_id,
+        fullName: existingOrder.full_name,
+        email: existingOrder.email,
+        status: input.status || existingOrder.status,
+      };
+
+      // Check if payment status changed to PAID
+      const paymentBecamePaid = input.paymentStatus === 'PAID' && existingOrder.payment_status !== 'PAID';
+      
+      // Check if fulfillment status changed
+      const statusChanged = input.status && input.status !== existingOrder.status;
+
+      if (paymentBecamePaid) {
+        // Send payment confirmation email
+        sendPaymentConfirmationEmail(emailData, env).catch(err => {
+          console.error('Failed to send payment confirmation email:', err);
+        });
+      } else if (statusChanged) {
+        // Send status update email
+        sendStatusUpdateEmail(emailData, env).catch(err => {
+          console.error('Failed to send status update email:', err);
+        });
+      }
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

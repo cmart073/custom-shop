@@ -1,4 +1,4 @@
-// CMart073 Validation Utilities
+// Cmart Customization Shop Validation Utilities
 
 export interface OrderFormData {
   // Customer
@@ -186,6 +186,7 @@ export const ORDER_STATUSES = [
   'pending',
   'received',
   'in_progress',
+  'ready',
   'completed',
   'shipped',
   'cancelled',
@@ -198,6 +199,7 @@ export function formatStatus(status: string): string {
     pending: 'Pending',
     received: 'Received',
     in_progress: 'In Progress',
+    ready: 'Ready',
     completed: 'Completed',
     shipped: 'Shipped',
     cancelled: 'Cancelled',

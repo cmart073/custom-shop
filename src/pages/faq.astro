@@ -3,34 +3,42 @@ import Layout from '../layouts/Layout.astro';
 
 const faqs = [
   {
-    question: "Does this change performance?",
-    answer: "No. All services are cosmetic only."
+    question: "Will this affect how my clubs play?",
+    answer: "Nope. I'm only filling in the recessed areas with paint — the lettering, logos, and sightlines. Nothing changes about loft, lie, weight, or feel."
   },
   {
-    question: "How long does it last?",
-    answer: "Paint is durable under normal play. Avoid harsh solvents."
+    question: "How durable is the paint?",
+    answer: "It holds up well through normal play. Just avoid nail polish remover or acetone — that'll strip it right out. Regular cleaning is fine."
   },
   {
-    question: "Can you match team or bag colors?",
-    answer: "Yes."
+    question: "Can you match a specific color?",
+    answer: "Yep. Send me a photo or hex code and I'll match it as closely as possible. Team colors, bag colors, whatever you want."
   },
   {
-    question: "Do you work on putters?",
-    answer: "Yes — same paint fill process."
+    question: "Do you do putters?",
+    answer: "Absolutely. Same process — fill the recessed lettering and sightlines. Putters actually come out great because the engravings are usually clean and deep."
   },
   {
-    question: "Can you fix chipped paint?",
-    answer: "Yes. Strip & redo is available."
+    question: "What if my current paint is chipped or messy?",
+    answer: "I can strip the old paint out first and start fresh. That's the 'Strip & Redo' option. It adds a bit to the cost, but the results are way better than trying to paint over a mess."
+  },
+  {
+    question: "How long does it take?",
+    answer: "Once I have your clubs, usually 2-5 business days depending on my queue. I'll keep you posted on status throughout."
+  },
+  {
+    question: "How do I pay?",
+    answer: "I'll send payment details (Venmo or PayPal) when your clubs are ready to ship back. Nothing to pay upfront."
   }
 ];
 ---
 
-<Layout title="FAQ — CMart073">
+<Layout title="FAQ — Cmart Customization Shop">
   <section class="hero" style="padding: var(--space-2xl) 0;">
     <div class="container">
-      <h1 class="hero__title" style="font-size: clamp(1.75rem, 4vw, 2.5rem);">Frequently Asked Questions</h1>
+      <h1 class="hero__title" style="font-size: clamp(1.75rem, 4vw, 2.5rem);">Questions? I've got answers.</h1>
       <p class="hero__subtitle" style="font-size: 1.125rem; margin-bottom: 0;">
-        Common questions about our services
+        The stuff people usually ask before sending their clubs
       </p>
     </div>
   </section>
@@ -53,9 +61,9 @@ const faqs = [
 
       <!-- Additional Questions -->
       <div class="card mt-2xl text-center" style="background: var(--color-bg-alt);">
-        <h3 style="margin-bottom: var(--space-sm);">Still Have Questions?</h3>
+        <h3 style="margin-bottom: var(--space-sm);">Something else on your mind?</h3>
         <p class="text-muted" style="margin-bottom: var(--space-lg);">
-          Include your questions in the notes section when you place your order, or reach out after submitting.
+          Drop your question in the notes when you submit your order. I read everything.
         </p>
         <a href="/order" class="btn btn--primary">Start Your Order</a>
       </div>
