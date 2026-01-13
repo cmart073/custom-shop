@@ -301,12 +301,17 @@ interface SendEmailParams {
 }
 
 async function sendEmail(params: SendEmailParams, env: EmailEnv): Promise<boolean> {
+  // Log FIRST before any async operations
+  console.log('EMAIL_START', params.to, params.subject);
+  console.log('EMAIL_FROM', env.FROM_EMAIL);
+  console.log('EMAIL_KEY_EXISTS', !!env.RESEND_API_KEY);
+  console.log('EMAIL_KEY_LENGTH', env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0);
+  
+  let response: Response;
+  let responseBody: string;
+  
   try {
-    console.log('Sending email to:', params.to, 'Subject:', params.subject);
-    console.log('Using FROM_EMAIL:', env.FROM_EMAIL);
-    console.log('RESEND_API_KEY present:', !!env.RESEND_API_KEY);
-    
-    const response = await fetch('https://api.resend.com/emails', {
+    response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + env.RESEND_API_KEY,
@@ -319,19 +324,25 @@ async function sendEmail(params: SendEmailParams, env: EmailEnv): Promise<boolea
         html: params.html,
       }),
     });
-
-    const responseText = await response.text();
-    console.log('Resend response status:', response.status);
-    console.log('Resend response body:', responseText);
-
+    
+    responseBody = await response.text();
+    
+    // Log response immediately
+    console.log('EMAIL_STATUS', response.status);
+    console.log('EMAIL_RESPONSE', responseBody);
+    
     if (!response.ok) {
-      console.error('Resend error:', response.status, responseText);
+      console.log('EMAIL_ERROR', response.status, responseBody);
       return false;
     }
-
+    
+    console.log('EMAIL_SUCCESS');
     return true;
+    
   } catch (error) {
-    console.error('Email send error:', error);
+    // Catch and log any fetch errors
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.log('EMAIL_FETCH_ERROR', errMsg);
     return false;
   }
 }
