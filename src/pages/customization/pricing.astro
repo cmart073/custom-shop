@@ -1,0 +1,141 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Pricing — CMart073">
+  <section class="hero" style="padding: var(--space-2xl) 0;">
+    <div class="container">
+      <h1 class="hero__title" style="font-size: clamp(1.75rem, 4vw, 2.5rem);">Pricing</h1>
+      <p class="hero__subtitle" style="font-size: 1.125rem; margin-bottom: 0;">
+        Transparent pricing for all our services
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      
+      <!-- Paint Fill -->
+      <div class="mb-2xl">
+        <h2 style="margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+          Paint Fill
+        </h2>
+        
+        <div style="display: grid; gap: 1rem;">
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg);">
+            <div>
+              <strong>Iron paint fill (7–9 clubs)</strong>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-primary);">$85</div>
+          </div>
+          
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg);">
+            <div>
+              <strong>Iron paint fill (4–6 clubs)</strong>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-primary);">$65</div>
+          </div>
+          
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg);">
+            <div>
+              <strong>Single club touch-up</strong>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-primary);">$40</div>
+          </div>
+          
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg);">
+            <div>
+              <strong>Putter paint fill</strong>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-primary);">$55</div>
+          </div>
+          
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); background: var(--color-bg-alt);">
+            <div>
+              <strong>Multi-color add-on (irons)</strong>
+              <p class="text-muted" style="margin: 0.25rem 0 0; font-size: 0.875rem;">Additional colors or custom patterns</p>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-accent-dark);">+$20</div>
+          </div>
+          
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); background: var(--color-bg-alt);">
+            <div>
+              <strong>Multi-color add-on (putter)</strong>
+              <p class="text-muted" style="margin: 0.25rem 0 0; font-size: 0.875rem;">Additional colors or custom patterns</p>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-accent-dark);">+$15</div>
+          </div>
+          
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); background: var(--color-bg-alt);">
+            <div>
+              <strong>Strip old paint & redo</strong>
+              <p class="text-muted" style="margin: 0.25rem 0 0; font-size: 0.875rem;">Remove existing paint before new fill</p>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-accent-dark);">+$25</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grips -->
+      <div class="mb-2xl">
+        <h2 style="margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+          Grips
+        </h2>
+        
+        <div style="display: grid; gap: 1rem;">
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg);">
+            <div>
+              <strong>Install customer-supplied grips</strong>
+              <p class="text-muted" style="margin: 0.25rem 0 0; font-size: 0.875rem;">You send the grips, we install</p>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-primary);">$5 <span style="font-size: 0.875rem; font-weight: 400;">per grip</span></div>
+          </div>
+          
+          <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg);">
+            <div>
+              <strong>Supply & install grips</strong>
+              <p class="text-muted" style="margin: 0.25rem 0 0; font-size: 0.875rem;">We source and install your chosen grips</p>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--color-primary);">Grip cost + $7 <span style="font-size: 0.875rem; font-weight: 400;">per grip</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipping -->
+      <div class="mb-2xl">
+        <h2 style="margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+          Shipping
+        </h2>
+        
+        <div class="card" style="padding: var(--space-xl);">
+          <div style="display: grid; gap: 1rem;">
+            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+              <div style="width: 24px; height: 24px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0;">→</div>
+              <div>
+                <strong>Inbound</strong>
+                <p class="text-muted" style="margin: 0.25rem 0 0;">Customer ships clubs to CMart073</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+              <div style="width: 24px; height: 24px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0;">←</div>
+              <div>
+                <strong>Return</strong>
+                <p class="text-muted" style="margin: 0.25rem 0 0;">Return shipping billed at cost (typically $15–$25)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="text-center">
+        <a href="/customization/order" class="btn btn--primary btn--lg">Start Your Order</a>
+        <p class="text-muted mt-md" style="font-size: 0.875rem;">
+          You'll see an estimate before submitting
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

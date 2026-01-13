@@ -1,0 +1,82 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqs = [
+  {
+    question: "Does this change performance?",
+    answer: "No. All services are cosmetic only."
+  },
+  {
+    question: "How long does it last?",
+    answer: "Paint is durable under normal play. Avoid harsh solvents."
+  },
+  {
+    question: "Can you match team or bag colors?",
+    answer: "Yes."
+  },
+  {
+    question: "Do you work on putters?",
+    answer: "Yes — same paint fill process."
+  },
+  {
+    question: "Can you fix chipped paint?",
+    answer: "Yes. Strip & redo is available."
+  }
+];
+---
+
+<Layout title="FAQ — CMart073">
+  <section class="hero" style="padding: var(--space-2xl) 0;">
+    <div class="container">
+      <h1 class="hero__title" style="font-size: clamp(1.75rem, 4vw, 2.5rem);">Frequently Asked Questions</h1>
+      <p class="hero__subtitle" style="font-size: 1.125rem; margin-bottom: 0;">
+        Common questions about our services
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      <div style="display: grid; gap: 1rem;">
+        {faqs.map((faq, index) => (
+          <details class="card faq-item" style="padding: 0;">
+            <summary style="padding: var(--space-lg) var(--space-xl); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
+              {faq.question}
+              <span class="faq-icon" style="font-size: 1.5rem; color: var(--color-text-muted); transition: transform 0.2s;">+</span>
+            </summary>
+            <div style="padding: 0 var(--space-xl) var(--space-lg); color: var(--color-text-muted);">
+              {faq.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+
+      <!-- Additional Questions -->
+      <div class="card mt-2xl text-center" style="background: var(--color-bg-alt);">
+        <h3 style="margin-bottom: var(--space-sm);">Still Have Questions?</h3>
+        <p class="text-muted" style="margin-bottom: var(--space-lg);">
+          Include your questions in the notes section when you place your order, or reach out after submitting.
+        </p>
+        <a href="/customization/order" class="btn btn--primary">Start Your Order</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .faq-item[open] .faq-icon {
+    transform: rotate(45deg);
+  }
+  
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  .faq-item summary::marker {
+    display: none;
+  }
+  
+  .faq-item summary {
+    list-style: none;
+  }
+</style>

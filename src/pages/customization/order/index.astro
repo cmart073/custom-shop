@@ -1,0 +1,678 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+// Get Turnstile site key from environment
+const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY || '0x4AAAAAABiHdP5lPBrXmJTf';
+---
+
+<Layout title="Start Your Order — CMart073">
+  <section class="hero" style="padding: var(--space-2xl) 0;">
+    <div class="container">
+      <h1 class="hero__title" style="font-size: clamp(1.75rem, 4vw, 2.5rem);">Start Your Order</h1>
+      <p class="hero__subtitle" style="font-size: 1.125rem; margin-bottom: 0;">
+        Fill out the form below and upload photos of your clubs
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width: 900px;">
+      <form id="order-form" class="card" style="padding: var(--space-2xl);">
+        
+        <!-- Customer Information -->
+        <div class="form-section mb-2xl">
+          <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+            Customer Information
+          </h2>
+          
+          <div class="grid grid--2">
+            <div class="form-group">
+              <label class="form-label form-label--required" for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="fullName" class="form-input" required>
+              <div class="form-error" data-error="fullName"></div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label form-label--required" for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-input" required>
+              <div class="form-error" data-error="email"></div>
+            </div>
+          </div>
+          
+          <div class="grid grid--2">
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone (optional)</label>
+              <input type="tel" id="phone" name="phone" class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label form-label--required">Preferred Contact Method</label>
+              <div class="form-radio-group" style="margin-top: 0.5rem;">
+                <label class="form-radio">
+                  <input type="radio" name="preferredContactMethod" value="email" checked>
+                  <span>Email</span>
+                </label>
+                <label class="form-radio">
+                  <input type="radio" name="preferredContactMethod" value="text">
+                  <span>Text</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label form-label--required" for="shippingAddress">Shipping Address</label>
+            <textarea id="shippingAddress" name="shippingAddress" class="form-textarea" rows="3" required placeholder="Street address&#10;City, State ZIP"></textarea>
+            <div class="form-hint">This is where we'll ship your clubs back to</div>
+            <div class="form-error" data-error="shippingAddress"></div>
+          </div>
+        </div>
+
+        <!-- Service Selection -->
+        <div class="form-section mb-2xl">
+          <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+            Service Selection
+          </h2>
+          
+          <div class="form-group">
+            <label class="form-label form-label--required">Service Type</label>
+            <div class="form-radio-group" style="flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+              <label class="form-radio">
+                <input type="radio" name="serviceType" value="irons" checked>
+                <span>Iron Paint Fill</span>
+              </label>
+              <label class="form-radio">
+                <input type="radio" name="serviceType" value="putter">
+                <span>Putter Paint Fill</span>
+              </label>
+              <label class="form-radio">
+                <input type="radio" name="serviceType" value="both">
+                <span>Both (Irons + Putter)</span>
+              </label>
+              <label class="form-radio">
+                <input type="radio" name="serviceType" value="grips_only">
+                <span>Grips Only (No Paint)</span>
+              </label>
+            </div>
+          </div>
+          
+          <div id="paint-options">
+            <div class="grid grid--2">
+              <div class="form-group">
+                <label class="form-label form-label--required" for="clubCount">Number of Clubs</label>
+                <input type="number" id="clubCount" name="clubCount" class="form-input" min="1" max="14" value="7">
+                <div class="form-hint">How many clubs need paint fill</div>
+                <div class="form-error" data-error="clubCount"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label form-label--required" for="currentPaintCondition">Current Paint Condition</label>
+                <select id="currentPaintCondition" name="currentPaintCondition" class="form-select">
+                  <option value="good">Good - Light touch-up needed</option>
+                  <option value="chipped">Chipped - Some areas missing</option>
+                  <option value="strip_redo">Strip & Redo - Complete refresh needed</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label form-label--required">Paint Style</label>
+              <div class="form-radio-group" style="flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+                <label class="form-radio">
+                  <input type="radio" name="paintStyle" value="single_color" checked>
+                  <span>Single Color</span>
+                </label>
+                <label class="form-radio">
+                  <input type="radio" name="paintStyle" value="multi_color">
+                  <span>Multi-Color (+$20 irons / +$15 putter)</span>
+                </label>
+                <label class="form-radio">
+                  <input type="radio" name="paintStyle" value="match_theme">
+                  <span>Match Team/Bag Theme (+$20 irons / +$15 putter)</span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="grid grid--2">
+              <div class="form-group">
+                <label class="form-label form-label--required" for="primaryColor">Primary Color</label>
+                <input type="text" id="primaryColor" name="primaryColor" class="form-input" placeholder="e.g., White, Red, Navy Blue">
+                <div class="form-error" data-error="primaryColor"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="secondaryColor">Secondary Color (if multi-color)</label>
+                <input type="text" id="secondaryColor" name="secondaryColor" class="form-input" placeholder="e.g., Gold, Black">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="notes">Additional Notes (optional)</label>
+            <textarea id="notes" name="notes" class="form-textarea" rows="3" placeholder="Any special instructions, color matching requests, or questions..."></textarea>
+          </div>
+        </div>
+
+        <!-- Grips Section -->
+        <div class="form-section mb-2xl">
+          <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+            Grip Installation (Optional)
+          </h2>
+          
+          <div class="form-group">
+            <label class="form-label form-label--required">Grip Service</label>
+            <div class="form-radio-group" style="flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+              <label class="form-radio">
+                <input type="radio" name="gripService" value="none" checked>
+                <span>No grip service</span>
+              </label>
+              <label class="form-radio">
+                <input type="radio" name="gripService" value="install_customer_supplied">
+                <span>Install my grips ($5 per grip)</span>
+              </label>
+              <label class="form-radio">
+                <input type="radio" name="gripService" value="supply_and_install">
+                <span>Supply & install grips (Grip cost + $7 per grip)</span>
+              </label>
+            </div>
+          </div>
+          
+          <div id="grip-options" style="display: none;">
+            <div class="grid grid--2">
+              <div class="form-group">
+                <label class="form-label form-label--required" for="gripCount">Number of Grips</label>
+                <input type="number" id="gripCount" name="gripCount" class="form-input" min="1" max="14" value="1">
+                <div class="form-error" data-error="gripCount"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label form-label--required" for="gripSize">Grip Size</label>
+                <select id="gripSize" name="gripSize" class="form-select">
+                  <option value="standard">Standard</option>
+                  <option value="midsize">Midsize</option>
+                  <option value="jumbo">Jumbo</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="grid grid--2">
+              <div class="form-group" id="grip-model-group" style="display: none;">
+                <label class="form-label form-label--required" for="gripModel">Grip Model</label>
+                <input type="text" id="gripModel" name="gripModel" class="form-input" placeholder="e.g., Golf Pride MCC, SuperStroke S-Tech">
+                <div class="form-hint">Specify the exact grip you want us to source</div>
+                <div class="form-error" data-error="gripModel"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="extraWraps">Extra Wraps</label>
+                <select id="extraWraps" name="extraWraps" class="form-select">
+                  <option value="0">0 (standard)</option>
+                  <option value="1">1 wrap</option>
+                  <option value="2">2 wraps</option>
+                  <option value="3">3 wraps</option>
+                  <option value="4">4 wraps</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="form-section mb-2xl">
+          <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+            Club Photos
+          </h2>
+          
+          <p class="text-muted mb-lg">
+            Upload 2–10 clear photos of your clubs. Include shots of the club faces, any chipped areas, and any reference images for colors you want.
+          </p>
+          
+          <div id="upload-zone" class="upload-zone">
+            <div class="upload-zone__icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <p class="upload-zone__text">
+              <strong>Click to upload</strong> or drag and drop<br>
+              <span style="font-size: 0.875rem;">JPEG, PNG, or WebP • Max 10MB each • 2–10 photos required</span>
+            </p>
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" multiple style="display: none;">
+          </div>
+          
+          <div id="upload-previews" class="upload-previews"></div>
+          <div class="form-error" data-error="photos" style="margin-top: var(--space-sm);"></div>
+        </div>
+
+        <!-- Price Estimate -->
+        <div class="form-section mb-2xl">
+          <div class="price-estimate">
+            <div class="price-estimate__label">Estimated Total</div>
+            <div class="price-estimate__value" id="price-display">$0</div>
+            <div class="price-estimate__note">Includes estimated return shipping • Final price may vary</div>
+          </div>
+        </div>
+
+        <!-- Acknowledgements -->
+        <div class="form-section mb-2xl">
+          <h2 style="font-size: 1.25rem; margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-border);">
+            Acknowledgements
+          </h2>
+          
+          <div style="display: grid; gap: 0.75rem;">
+            <label class="form-checkbox" style="align-items: flex-start;">
+              <input type="checkbox" name="ack_cosmetic" required style="margin-top: 3px;">
+              <span>I understand all services are cosmetic only — no performance modifications will be made.</span>
+            </label>
+            
+            <label class="form-checkbox" style="align-items: flex-start;">
+              <input type="checkbox" name="ack_turnaround" required style="margin-top: 3px;">
+              <span>I understand turnaround is typically 2–5 business days after clubs are received.</span>
+            </label>
+            
+            <label class="form-checkbox" style="align-items: flex-start;">
+              <input type="checkbox" name="ack_shipping" required style="margin-top: 3px;">
+              <span>I understand I am responsible for shipping my clubs to CMart073.</span>
+            </label>
+          </div>
+          <div class="form-error" data-error="acknowledgements" style="margin-top: var(--space-sm);"></div>
+        </div>
+
+        <!-- Turnstile -->
+        <div class="form-section mb-xl">
+          <div id="turnstile-container" class="cf-turnstile" data-sitekey={turnstileSiteKey} data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError"></div>
+          <div class="form-error" data-error="turnstile"></div>
+        </div>
+
+        <!-- Submit -->
+        <div class="form-section">
+          <button type="submit" id="submit-btn" class="btn btn--primary btn--lg btn--full" disabled>
+            <span id="submit-text">Submit Order</span>
+            <span id="submit-spinner" class="spinner" style="display: none;"></span>
+          </button>
+          <div class="form-error text-center" data-error="submit" style="margin-top: var(--space-md);"></div>
+        </div>
+      </form>
+    </div>
+  </section>
+</Layout>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script>
+  // State
+  let uploadedFiles: File[] = [];
+  let turnstileToken = '';
+  
+  // DOM Elements
+  const form = document.getElementById('order-form') as HTMLFormElement;
+  const uploadZone = document.getElementById('upload-zone') as HTMLDivElement;
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const uploadPreviews = document.getElementById('upload-previews') as HTMLDivElement;
+  const priceDisplay = document.getElementById('price-display') as HTMLDivElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const submitText = document.getElementById('submit-text') as HTMLSpanElement;
+  const submitSpinner = document.getElementById('submit-spinner') as HTMLSpanElement;
+  const paintOptions = document.getElementById('paint-options') as HTMLDivElement;
+  const gripOptions = document.getElementById('grip-options') as HTMLDivElement;
+  const gripModelGroup = document.getElementById('grip-model-group') as HTMLDivElement;
+  
+  // Pricing constants (in cents)
+  const PRICES = {
+    irons_7_9: 8500,
+    irons_4_6: 6500,
+    single_club: 4000,
+    putter: 5500,
+    multi_color_irons: 2000,
+    multi_color_putter: 1500,
+    strip_redo: 2500,
+    grip_customer: 500,
+    grip_supply: 700,
+    shipping_irons: 2000,
+    shipping_putter: 1500,
+  };
+
+  // Turnstile callbacks
+  (window as any).onTurnstileSuccess = function(token: string) {
+    turnstileToken = token;
+    clearError('turnstile');
+    updateSubmitButton();
+  };
+  
+  (window as any).onTurnstileError = function() {
+    turnstileToken = '';
+    showError('turnstile', 'Security verification failed. Please try again.');
+    updateSubmitButton();
+  };
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+    calculatePrice();
+    updateSubmitButton();
+  });
+
+  function setupEventListeners() {
+    // Service type change
+    document.querySelectorAll('input[name="serviceType"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const value = (input as HTMLInputElement).value;
+        paintOptions.style.display = value === 'grips_only' ? 'none' : 'block';
+        calculatePrice();
+      });
+    });
+    
+    // Paint style change
+    document.querySelectorAll('input[name="paintStyle"]').forEach(input => {
+      input.addEventListener('change', calculatePrice);
+    });
+    
+    // Club count change
+    document.getElementById('clubCount')?.addEventListener('input', calculatePrice);
+    
+    // Paint condition change
+    document.getElementById('currentPaintCondition')?.addEventListener('change', calculatePrice);
+    
+    // Grip service change
+    document.querySelectorAll('input[name="gripService"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const value = (input as HTMLInputElement).value;
+        gripOptions.style.display = value === 'none' ? 'none' : 'block';
+        gripModelGroup.style.display = value === 'supply_and_install' ? 'block' : 'none';
+        calculatePrice();
+      });
+    });
+    
+    // Grip count change
+    document.getElementById('gripCount')?.addEventListener('input', calculatePrice);
+    
+    // File upload
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', handleDragOver);
+    uploadZone.addEventListener('dragleave', handleDragLeave);
+    uploadZone.addEventListener('drop', handleDrop);
+    fileInput.addEventListener('change', handleFileSelect);
+    
+    // Form submit
+    form.addEventListener('submit', handleSubmit);
+  }
+
+  function calculatePrice() {
+    const serviceType = (document.querySelector('input[name="serviceType"]:checked') as HTMLInputElement)?.value || 'irons';
+    const clubCount = parseInt((document.getElementById('clubCount') as HTMLInputElement)?.value) || 0;
+    const paintCondition = (document.getElementById('currentPaintCondition') as HTMLSelectElement)?.value || 'good';
+    const paintStyle = (document.querySelector('input[name="paintStyle"]:checked') as HTMLInputElement)?.value || 'single_color';
+    const gripService = (document.querySelector('input[name="gripService"]:checked') as HTMLInputElement)?.value || 'none';
+    const gripCount = parseInt((document.getElementById('gripCount') as HTMLInputElement)?.value) || 0;
+
+    let total = 0;
+    let shipping = 0;
+
+    // Base price
+    if (serviceType === 'irons' || serviceType === 'both') {
+      if (clubCount >= 7) {
+        total += PRICES.irons_7_9;
+      } else if (clubCount >= 4) {
+        total += PRICES.irons_4_6;
+      } else if (clubCount === 1) {
+        total += PRICES.single_club;
+      } else if (clubCount >= 2) {
+        total += Math.min(PRICES.single_club * clubCount, PRICES.irons_4_6);
+      }
+    }
+    
+    if (serviceType === 'putter' || serviceType === 'both') {
+      total += PRICES.putter;
+    }
+
+    // Multi-color addon
+    if (paintStyle === 'multi_color' || paintStyle === 'match_theme') {
+      if (serviceType === 'irons' || serviceType === 'both') {
+        total += PRICES.multi_color_irons;
+      }
+      if (serviceType === 'putter' || serviceType === 'both') {
+        total += PRICES.multi_color_putter;
+      }
+    }
+
+    // Strip & redo
+    if (paintCondition === 'strip_redo' && serviceType !== 'grips_only') {
+      total += PRICES.strip_redo;
+    }
+
+    // Grips
+    if (gripService === 'install_customer_supplied' && gripCount > 0) {
+      total += PRICES.grip_customer * gripCount;
+    } else if (gripService === 'supply_and_install' && gripCount > 0) {
+      total += PRICES.grip_supply * gripCount;
+    }
+
+    // Shipping estimate
+    if (serviceType === 'putter') {
+      shipping = PRICES.shipping_putter;
+    } else if (serviceType !== 'grips_only') {
+      shipping = PRICES.shipping_irons;
+    } else if (gripService !== 'none') {
+      shipping = gripCount > 6 ? PRICES.shipping_irons : PRICES.shipping_putter;
+    }
+
+    const min = total + shipping;
+    const max = total + shipping + 500; // $5 variance
+
+    priceDisplay.textContent = `$${Math.floor(min / 100)} – $${Math.floor(max / 100)}`;
+  }
+
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+    uploadZone.classList.add('upload-zone--active');
+  }
+
+  function handleDragLeave(e: DragEvent) {
+    e.preventDefault();
+    uploadZone.classList.remove('upload-zone--active');
+  }
+
+  function handleDrop(e: DragEvent) {
+    e.preventDefault();
+    uploadZone.classList.remove('upload-zone--active');
+    const files = e.dataTransfer?.files;
+    if (files) addFiles(Array.from(files));
+  }
+
+  function handleFileSelect(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (target.files) addFiles(Array.from(target.files));
+    target.value = '';
+  }
+
+  function addFiles(files: File[]) {
+    clearError('photos');
+    
+    for (const file of files) {
+      // Check type
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showError('photos', 'Only JPEG, PNG, and WebP images are allowed');
+        continue;
+      }
+      
+      // Check size
+      if (file.size > 10 * 1024 * 1024) {
+        showError('photos', 'Each file must be under 10MB');
+        continue;
+      }
+      
+      // Check total count
+      if (uploadedFiles.length >= 10) {
+        showError('photos', 'Maximum 10 photos allowed');
+        break;
+      }
+      
+      uploadedFiles.push(file);
+    }
+    
+    renderPreviews();
+    updateSubmitButton();
+  }
+
+  function removeFile(index: number) {
+    uploadedFiles.splice(index, 1);
+    renderPreviews();
+    updateSubmitButton();
+  }
+
+  function renderPreviews() {
+    uploadPreviews.innerHTML = '';
+    
+    uploadedFiles.forEach((file, index) => {
+      const preview = document.createElement('div');
+      preview.className = 'upload-preview';
+      
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'upload-preview__remove';
+      removeBtn.innerHTML = '×';
+      removeBtn.onclick = () => removeFile(index);
+      
+      preview.appendChild(img);
+      preview.appendChild(removeBtn);
+      uploadPreviews.appendChild(preview);
+    });
+  }
+
+  function updateSubmitButton() {
+    const hasMinPhotos = uploadedFiles.length >= 2;
+    const hasTurnstile = !!turnstileToken;
+    submitBtn.disabled = !hasMinPhotos || !hasTurnstile;
+  }
+
+  function showError(field: string, message: string) {
+    const errorEl = document.querySelector(`[data-error="${field}"]`);
+    if (errorEl) errorEl.textContent = message;
+  }
+
+  function clearError(field: string) {
+    const errorEl = document.querySelector(`[data-error="${field}"]`);
+    if (errorEl) errorEl.textContent = '';
+  }
+
+  function clearAllErrors() {
+    document.querySelectorAll('[data-error]').forEach(el => el.textContent = '');
+  }
+
+  async function handleSubmit(e: Event) {
+    e.preventDefault();
+    clearAllErrors();
+
+    // Validate photos
+    if (uploadedFiles.length < 2) {
+      showError('photos', 'Please upload at least 2 photos');
+      return;
+    }
+
+    // Validate acknowledgements
+    const acks = ['ack_cosmetic', 'ack_turnaround', 'ack_shipping'];
+    for (const ack of acks) {
+      const checkbox = document.querySelector(`input[name="${ack}"]`) as HTMLInputElement;
+      if (!checkbox?.checked) {
+        showError('acknowledgements', 'Please acknowledge all items above');
+        return;
+      }
+    }
+
+    // Validate turnstile
+    if (!turnstileToken) {
+      showError('turnstile', 'Please complete the security verification');
+      return;
+    }
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitText.style.display = 'none';
+    submitSpinner.style.display = 'block';
+
+    try {
+      // First, upload files
+      const formData = new FormData();
+      uploadedFiles.forEach((file) => {
+        formData.append('files', file);
+      });
+
+      const uploadResponse = await fetch('/api/uploads', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        const uploadError = await uploadResponse.json();
+        throw new Error(uploadError.error || 'Failed to upload photos');
+      }
+
+      const uploadResult = await uploadResponse.json();
+      
+      if (!uploadResult.success || !uploadResult.uploads) {
+        throw new Error('Upload failed');
+      }
+
+      // Now submit order with upload data
+      const serviceType = (document.querySelector('input[name="serviceType"]:checked') as HTMLInputElement).value;
+      const gripService = (document.querySelector('input[name="gripService"]:checked') as HTMLInputElement).value;
+      
+      const orderData = {
+        fullName: (document.getElementById('fullName') as HTMLInputElement).value,
+        email: (document.getElementById('email') as HTMLInputElement).value,
+        phone: (document.getElementById('phone') as HTMLInputElement).value || null,
+        shippingAddress: (document.getElementById('shippingAddress') as HTMLTextAreaElement).value,
+        preferredContactMethod: (document.querySelector('input[name="preferredContactMethod"]:checked') as HTMLInputElement).value,
+        serviceType,
+        clubCount: serviceType !== 'grips_only' ? parseInt((document.getElementById('clubCount') as HTMLInputElement).value) || null : null,
+        currentPaintCondition: serviceType !== 'grips_only' ? (document.getElementById('currentPaintCondition') as HTMLSelectElement).value : null,
+        paintStyle: serviceType !== 'grips_only' ? (document.querySelector('input[name="paintStyle"]:checked') as HTMLInputElement)?.value || null : null,
+        primaryColor: serviceType !== 'grips_only' ? (document.getElementById('primaryColor') as HTMLInputElement).value || null : null,
+        secondaryColor: (document.getElementById('secondaryColor') as HTMLInputElement).value || null,
+        notes: (document.getElementById('notes') as HTMLTextAreaElement).value || null,
+        gripService,
+        gripCount: gripService !== 'none' ? parseInt((document.getElementById('gripCount') as HTMLInputElement).value) || null : null,
+        gripModel: gripService === 'supply_and_install' ? (document.getElementById('gripModel') as HTMLInputElement).value || null : null,
+        gripSize: gripService !== 'none' ? (document.getElementById('gripSize') as HTMLSelectElement).value : null,
+        extraWraps: gripService !== 'none' ? parseInt((document.getElementById('extraWraps') as HTMLSelectElement).value) || 0 : null,
+        turnstileToken,
+        uploads: uploadResult.uploads,
+      };
+
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!orderResponse.ok) {
+        const error = await orderResponse.json();
+        throw new Error(error.error || 'Failed to submit order');
+      }
+
+      const orderResult = await orderResponse.json();
+      
+      // Redirect to success page with price info
+      const params = new URLSearchParams({
+        id: orderResult.shortId,
+        min: orderResult.estPriceMin.toString(),
+        max: orderResult.estPriceMax.toString(),
+      });
+      window.location.href = `/customization/order/success?${params.toString()}`;
+      
+    } catch (error) {
+      console.error('Submit error:', error);
+      showError('submit', error instanceof Error ? error.message : 'An error occurred. Please try again.');
+      
+      // Reset button
+      submitBtn.disabled = false;
+      submitText.style.display = 'block';
+      submitSpinner.style.display = 'none';
+    }
+  }
+</script>

@@ -1,0 +1,148 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { listOrders, ORDER_STATUSES } from '../../lib/database';
+import { formatStatus, formatPrice, formatPriceRange } from '../../lib/validation';
+
+// Get query params
+const url = new URL(Astro.request.url);
+const statusFilter = url.searchParams.get('status') || 'all';
+const page = parseInt(url.searchParams.get('page') || '1');
+const limit = 20;
+const offset = (page - 1) * limit;
+
+// Get database binding
+const db = Astro.locals.runtime?.env?.DB;
+
+let orders: any[] = [];
+let total = 0;
+
+if (db) {
+  try {
+    const result = await listOrders(db, {
+      status: statusFilter !== 'all' ? statusFilter : undefined,
+      limit,
+      offset,
+    });
+    orders = result.orders;
+    total = result.total;
+  } catch (error) {
+    console.error('Failed to load orders:', error);
+  }
+}
+
+const totalPages = Math.ceil(total / limit);
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function formatServiceType(type: string): string {
+  const types: Record<string, string> = {
+    irons: 'Irons',
+    putter: 'Putter',
+    both: 'Both',
+    grips_only: 'Grips Only',
+  };
+  return types[type] || type;
+}
+---
+
+<AdminLayout title="Orders — CMart073 Admin">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl); flex-wrap: wrap; gap: var(--space-md);">
+    <h1 style="margin: 0;">Orders</h1>
+    
+    <!-- Status Filter -->
+    <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+      <a 
+        href="/admin/orders" 
+        class={`btn btn--sm ${statusFilter === 'all' ? 'btn--primary' : 'btn--ghost'}`}
+      >All ({total})</a>
+      {ORDER_STATUSES.map(status => (
+        <a 
+          href={`/admin/orders?status=${status}`}
+          class={`btn btn--sm ${statusFilter === status ? 'btn--primary' : 'btn--ghost'}`}
+        >{formatStatus(status)}</a>
+      ))}
+    </div>
+  </div>
+  
+  {orders.length > 0 ? (
+    <>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Estimate</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map(order => (
+              <tr>
+                <td>
+                  <a href={`/admin/orders/${order.id}`} style="font-weight: 600; color: var(--color-primary);">
+                    {order.short_id}
+                  </a>
+                </td>
+                <td>
+                  <div>{order.full_name}</div>
+                  <div style="font-size: 0.8125rem; color: var(--color-text-muted);">{order.email}</div>
+                </td>
+                <td>{formatServiceType(order.service_type)}</td>
+                <td>
+                  {order.quoted_price 
+                    ? <span style="font-weight: 600;">{formatPrice(order.quoted_price)}</span>
+                    : <span style="color: var(--color-text-muted);">{formatPriceRange(order.est_price_min, order.est_price_max)}</span>
+                  }
+                </td>
+                <td><span class={`badge badge--${order.status}`}>{formatStatus(order.status)}</span></td>
+                <td style="color: var(--color-text-muted); font-size: 0.875rem;">{formatDate(order.created_at)}</td>
+                <td>
+                  <a href={`/admin/orders/${order.id}`} class="btn btn--ghost btn--sm">View</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      {totalPages > 1 && (
+        <div style="display: flex; justify-content: center; gap: var(--space-sm); margin-top: var(--space-xl);">
+          {page > 1 && (
+            <a 
+              href={`/admin/orders?status=${statusFilter}&page=${page - 1}`}
+              class="btn btn--ghost btn--sm"
+            >← Previous</a>
+          )}
+          
+          <span style="display: flex; align-items: center; padding: 0 var(--space-md); color: var(--color-text-muted);">
+            Page {page} of {totalPages}
+          </span>
+          
+          {page < totalPages && (
+            <a 
+              href={`/admin/orders?status=${statusFilter}&page=${page + 1}`}
+              class="btn btn--ghost btn--sm"
+            >Next →</a>
+          )}
+        </div>
+      )}
+    </>
+  ) : (
+    <div class="card text-center" style="padding: var(--space-3xl);">
+      <p class="text-muted">No orders found{statusFilter !== 'all' ? ` with status "${formatStatus(statusFilter)}"` : ''}</p>
+    </div>
+  )}
+</AdminLayout>

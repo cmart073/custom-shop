@@ -1,0 +1,43 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = 'Admin - CMart073' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{title}</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-header__inner">
+      <div class="admin-header__title">CMart073 Admin</div>
+      <nav class="admin-header__nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/orders">Orders</a>
+        <a href="/customization" target="_blank">View Site →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="padding: var(--space-2xl) 0; min-height: calc(100vh - 60px);">
+    <div class="container container--wide">
+      <slot />
+    </div>
+  </main>
+</body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

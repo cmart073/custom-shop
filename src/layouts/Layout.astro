@@ -1,0 +1,80 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = 'CMart073 - Custom Paint Fill & Grips',
+  description = 'Precision cosmetic paint fill for irons and putters. Optional grip installs. Mail-in service. Fast turnaround.'
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content={description}>
+  <title>{title}</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="/customization" class="site-logo">
+        <span class="site-logo__icon">CM</span>
+        <span>CMart073</span>
+      </a>
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="site-nav">
+        <a href="/customization">Home</a>
+        <a href="/customization/pricing">Pricing</a>
+        <a href="/customization/how-it-works">How It Works</a>
+        <a href="/customization/faq">FAQ</a>
+        <a href="/customization/order" class="btn btn--primary btn--sm">Start Order</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__inner">
+        <div class="site-footer__logo">CMart073</div>
+        <nav class="site-footer__links">
+          <a href="/customization/pricing">Pricing</a>
+          <a href="/customization/how-it-works">How It Works</a>
+          <a href="/customization/faq">FAQ</a>
+        </nav>
+        <p class="site-footer__copy">© {new Date().getFullYear()} CMart073. Built for golfers who care about the details.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const nav = document.querySelector('.site-nav');
+    
+    menuBtn?.addEventListener('click', () => {
+      nav?.classList.toggle('is-open');
+      menuBtn?.classList.toggle('is-open');
+    });
+  </script>
+</body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

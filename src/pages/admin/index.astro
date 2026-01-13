@@ -1,0 +1,142 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { listOrders, ORDER_STATUSES } from '../../lib/database';
+import { formatStatus } from '../../lib/validation';
+
+// Get database binding
+const db = Astro.locals.runtime?.env?.DB;
+
+let stats = {
+  total: 0,
+  pending: 0,
+  received: 0,
+  in_progress: 0,
+  completed: 0,
+  shipped: 0,
+};
+
+let recentOrders: any[] = [];
+
+if (db) {
+  try {
+    const result = await listOrders(db, { limit: 5 });
+    recentOrders = result.orders;
+    stats.total = result.total;
+    
+    // Get counts by status
+    for (const status of ORDER_STATUSES) {
+      const statusResult = await listOrders(db, { status, limit: 1 });
+      stats[status as keyof typeof stats] = statusResult.total;
+    }
+  } catch (error) {
+    console.error('Failed to load stats:', error);
+  }
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function formatServiceType(type: string): string {
+  const types: Record<string, string> = {
+    irons: 'Irons',
+    putter: 'Putter',
+    both: 'Both',
+    grips_only: 'Grips Only',
+  };
+  return types[type] || type;
+}
+---
+
+<AdminLayout title="Dashboard — CMart073 Admin">
+  <h1 style="margin-bottom: var(--space-xl);">Dashboard</h1>
+  
+  <!-- Stats Grid -->
+  <div class="grid grid--3" style="margin-bottom: var(--space-2xl);">
+    <div class="card" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%); color: white;">
+      <div style="font-size: 0.875rem; opacity: 0.8; margin-bottom: var(--space-xs);">Total Orders</div>
+      <div style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 700;">{stats.total}</div>
+    </div>
+    
+    <div class="card">
+      <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: var(--space-xs);">Pending</div>
+      <div style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--color-warning);">{stats.pending}</div>
+    </div>
+    
+    <div class="card">
+      <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: var(--space-xs);">In Progress</div>
+      <div style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--color-info);">{stats.in_progress}</div>
+    </div>
+  </div>
+  
+  <!-- Status Overview -->
+  <div class="card" style="margin-bottom: var(--space-2xl);">
+    <h2 style="font-size: 1.125rem; margin-bottom: var(--space-lg);">Order Status Overview</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-md);">
+      <a href="/admin/orders?status=pending" class="card card--hover" style="text-align: center; padding: var(--space-md); text-decoration: none;">
+        <span class="badge badge--pending" style="margin-bottom: var(--space-sm);">Pending</span>
+        <div style="font-size: 1.5rem; font-weight: 600;">{stats.pending}</div>
+      </a>
+      <a href="/admin/orders?status=received" class="card card--hover" style="text-align: center; padding: var(--space-md); text-decoration: none;">
+        <span class="badge badge--received" style="margin-bottom: var(--space-sm);">Received</span>
+        <div style="font-size: 1.5rem; font-weight: 600;">{stats.received}</div>
+      </a>
+      <a href="/admin/orders?status=in_progress" class="card card--hover" style="text-align: center; padding: var(--space-md); text-decoration: none;">
+        <span class="badge badge--in_progress" style="margin-bottom: var(--space-sm);">In Progress</span>
+        <div style="font-size: 1.5rem; font-weight: 600;">{stats.in_progress}</div>
+      </a>
+      <a href="/admin/orders?status=completed" class="card card--hover" style="text-align: center; padding: var(--space-md); text-decoration: none;">
+        <span class="badge badge--completed" style="margin-bottom: var(--space-sm);">Completed</span>
+        <div style="font-size: 1.5rem; font-weight: 600;">{stats.completed}</div>
+      </a>
+      <a href="/admin/orders?status=shipped" class="card card--hover" style="text-align: center; padding: var(--space-md); text-decoration: none;">
+        <span class="badge badge--shipped" style="margin-bottom: var(--space-sm);">Shipped</span>
+        <div style="font-size: 1.5rem; font-weight: 600;">{stats.shipped}</div>
+      </a>
+    </div>
+  </div>
+  
+  <!-- Recent Orders -->
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+      <h2 style="font-size: 1.125rem; margin: 0;">Recent Orders</h2>
+      <a href="/admin/orders" class="btn btn--ghost btn--sm">View All →</a>
+    </div>
+    
+    {recentOrders.length > 0 ? (
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentOrders.map(order => (
+              <tr>
+                <td style="font-weight: 600;">{order.short_id}</td>
+                <td>{order.full_name}</td>
+                <td>{formatServiceType(order.service_type)}</td>
+                <td><span class={`badge badge--${order.status}`}>{formatStatus(order.status)}</span></td>
+                <td style="color: var(--color-text-muted);">{formatDate(order.created_at)}</td>
+                <td><a href={`/admin/orders/${order.id}`} class="btn btn--ghost btn--sm">View</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <p class="text-muted text-center" style="padding: var(--space-2xl);">No orders yet</p>
+    )}
+  </div>
+</AdminLayout>
