@@ -103,6 +103,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     await db.prepare(`UPDATE orders SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
 
     // Send email notifications if checkbox was checked
+    let emailSent = false;
     if (input.notifyCustomer && env.RESEND_API_KEY) {
       const emailData = {
         shortId: existingOrder.short_id,
@@ -117,20 +118,20 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       // Check if fulfillment status changed
       const statusChanged = input.status && input.status !== existingOrder.status;
 
-      if (paymentBecamePaid) {
-        // Send payment confirmation email
-        sendPaymentConfirmationEmail(emailData, env).catch(err => {
-          console.error('Failed to send payment confirmation email:', err);
-        });
-      } else if (statusChanged) {
-        // Send status update email
-        sendStatusUpdateEmail(emailData, env).catch(err => {
-          console.error('Failed to send status update email:', err);
-        });
+      try {
+        if (paymentBecamePaid) {
+          // Send payment confirmation email - AWAIT it
+          emailSent = await sendPaymentConfirmationEmail(emailData, env);
+        } else if (statusChanged) {
+          // Send status update email - AWAIT it
+          emailSent = await sendStatusUpdateEmail(emailData, env);
+        }
+      } catch (err) {
+        console.error('Email send error:', err);
       }
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, emailSent }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
