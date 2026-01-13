@@ -5,7 +5,7 @@ pages_build_output_dir = "./dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "cmart073-db"
-database_id = "<YOUR_D1_DATABASE_ID>"
+database_id = "fc0cb680-e30c-408b-b60e-f13f42e57010"
 
 [[r2_buckets]]
 binding = "R2"
